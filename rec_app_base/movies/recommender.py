@@ -100,6 +100,8 @@ def movies_by_genre(genre, query_type, selection):
     for index, row in result.iterrows():
         movie_id, title, desc, cur_genre, release_date, vote_count, rating = row['id'], row['title'], row['overview'], ', '.join(row['genres']), row['release_date'], row['vote_count'], row['vote_average']
         result_ids.append(movie_id)
+        if Movie.objects.filter(movie_id=movie_id).exists():
+            continue
         cur_movie = Movie(movie_id=movie_id, title=title, desc=desc, genre=cur_genre, release_date=release_date, vote_count=vote_count, rating=rating)
         cur_movie.save()
     return result_ids
