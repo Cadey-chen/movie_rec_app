@@ -7,6 +7,6 @@
         <p>Audience Score: {{ movie.rating }}</p>
         <p>Votes Count: {{ movie.vote_count }}</p>
         <p>Description: {{ movie.desc }}</p>
-        <img src="{{ movie.img_url }}" class="d-block w-100" style="width:100%">
+        <img src="{{ movie.img.url }}" class="d-block" width="30%" height="30%">
     {% endfor %}
 {% endblock content %}
