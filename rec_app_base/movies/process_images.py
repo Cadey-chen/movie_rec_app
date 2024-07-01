@@ -21,8 +21,6 @@ def get_response(url):
     """
     response = requests.get(url, headers=headers)
     res_json = response.json()
-    formatted_res = json.dumps(json.loads(response.text), indent=2)
-    # print(formatted_res)
     return res_json
 
 
@@ -33,10 +31,6 @@ def save_poster(movie_id, movie_obj, img_url):
     res = requests.get(img_url)
     img_suffix = res.headers['content-type'].split('/')[-1]
     img_name = "poster_{movie_id}.{suffix}".format(movie_id=movie_id, suffix=img_suffix)
-    # img_path = os.path.join(os.path.dirname(__file__), "templates", "movies", "posters", img_name)
-    # write the file into folder 
-    # with open(img_path, "wb") as handler:
-        # handler.write(res.content)
     # save an ImageField of the poster
     content = ContentFile(res.content)
     movie_obj.img.save(img_name, File(content), save=True)
