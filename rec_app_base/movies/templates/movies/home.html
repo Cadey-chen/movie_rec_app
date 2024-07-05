@@ -1,14 +1,79 @@
 {% extends "./base.html" %}
 {% block content %}
-    {% for movie in movies %}
-        <h2>{{ movie.title }}</h2>
-        <p>Release Date: {{ movie.release_date }}</p>
-        <p>Genres: {{ movie.genre }}</p>
-        <p>Audience Score: {{ movie.rating }}</p>
-        <p>Votes Count: {{ movie.vote_count }}</p>
-        <p>Description: {{ movie.desc }}</p>
-        {% if movie.img %}
-            <img src="{{ movie.img.url }}" class="d-block" width="30%" height="30%">
-        {% endif %}
-    {% endfor %}
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Business Frontpage - Start Bootstrap Template</title>
+        <!-- Bootstrap icons-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body>
+        <!-- Header-->
+        <header class="py-5" style="background-color: #25313C;">
+            <div class="container px-5">
+                <div class="row gx-5 justify-content-center">
+                    <div class="col-lg-6">
+                        <div class="text-center my-5">
+                            <h1 class="display-5 fw-bolder text-white mb-2">Movie Recommender</h1>
+                            <p class="lead text-white-50 mb-4">Find the perfect movies for any mood, any occasion.</p>
+                            <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+                                <a class="btn btn-primary btn-lg px-4 me-sm-3" href="#features">START NOW!</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Features section-->
+        <section class="py-5 border-bottom" style="background-color: #25313C;" id="features">
+            <div class="container px-5 my-5">
+                <div class="row gx-5 text-light">
+                    <div class="col-lg-4 mb-5 mb-lg-0">
+                        <div class="feature bg-primary bg-gradient text-white rounded-3 mb-3"></div>
+                        <h2 class="h4 fw-bolder">EXPLORE MOVIES BY GENRE</h2>
+                        <p>Browse the top movies in each category ranked by audience score, popularity, or both!</p>
+                        <a class="text-decoration-none" href="movies_by_genre">
+                            BY GENRE
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                    <div class="col-lg-4 mb-5 mb-lg-0">
+                        <div class="feature bg-primary bg-gradient text-white rounded-3 mb-3"></div>
+                        <h2 class="h4 fw-bolder">LOOK FOR SIMILAR MOVIES</h2>
+                        <p>Give us the name of one movie you love and we&rsquo;ll give you a list of similar movies you&rsquo;ll love as well!</p>
+                        <a class="text-decoration-none" href="#!">
+                            BY SIMILARITY
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="feature bg-primary bg-gradient text-white rounded-3 mb-3"></div>
+                        <h2 class="h4 fw-bolder">FIND BY DESCRIPTION</h2>
+                        <p>Answer five short questions about the movie you are looking for, and we&rsquo;ll surprise you with a list of movie recommendations!</p>
+                        <a class="text-decoration-none" href="#!">
+                            BY DESCRIPTION
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Footer-->
+        <footer class="py-5" style="background-color: #25313C;">
+            <div class="container px-5"><p class="m-0 text-center text-white">Copyright &copy; Cadey Chen 2024</p></div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+        <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
+        <!-- * *                               SB Forms JS                               * *-->
+        <!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->
+        <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
+        <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
+    </body>
 {% endblock content %}

@@ -34,9 +34,12 @@ def get_movies_by_genre(genre, rank_type, num_movies):
         result.append(cur_movie)
     return result 
 
-
-# home view
+# home view 
 def home(request):
+    return render(request, "movies/home.html", {"title": "Movies Home"})
+
+# movies_by_genre view
+def movies_by_genre_view(request):
     if request.method == "POST":
         genre_form = GenreForm(request.POST)
         if genre_form.is_valid():
@@ -49,7 +52,7 @@ def home(request):
                 "movies": movies_list,
                 "title": "Top {num_str} {genre_str} movies".format(num_str=num_choice, genre_str=genre_choice)
             }
-            return render(request, "movies/home.html", context)
+            return render(request, "movies/movies_by_genre.html", context)
     else:
         genre_form = GenreForm()
         context = {
