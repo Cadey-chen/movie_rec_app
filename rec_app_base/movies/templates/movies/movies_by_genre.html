@@ -1,0 +1,14 @@
+{% extends "./base.html" %}
+{% block content %}
+    {% for movie in movies %}
+        <h2>{{ movie.title }}</h2>
+        <p>Release Date: {{ movie.release_date }}</p>
+        <p>Genres: {{ movie.genre }}</p>
+        <p>Audience Score: {{ movie.rating }}</p>
+        <p>Votes Count: {{ movie.vote_count }}</p>
+        <p>Description: {{ movie.desc }}</p>
+        {% if movie.img %}
+            <img src="{{ movie.img.url }}" class="d-block" width="30%" height="30%">
+        {% endif %}
+    {% endfor %}
+{% endblock content %}
