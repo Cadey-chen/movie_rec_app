@@ -10,3 +10,4 @@
 /rec_app_base/movies/templates/movies/css
 /rec_app_base/movies/templates/movies/js
 /rec_app_base/db.sqlite3
+/rec_app_base/movies/templates/movies/static/assets

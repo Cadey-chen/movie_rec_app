@@ -1,5 +1,6 @@
 {% extends "./base.html" %}
 {% block content %}
+{% load static %}
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -9,58 +10,62 @@
         <!-- Bootstrap icons-->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet" />
         <!-- Core theme CSS (includes Bootstrap)-->
-        <link href="css/styles.css" rel="stylesheet" />
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     </head>
     <body $font-family-base="Raleway">
         <!-- Header-->
-        <header class="py-5" style="background-color: #25313C;">
-            <div class="container px-5">
+        <header class="py-5">
+            <div class="container px-5 mt-6">
                 <div class="row gx-5 justify-content-center">
                     <div class="col-lg-6">
                         <div class="text-center my-5">
-                            <h1 class="display-5 fw-black text-pink mb-3 fade-in">Movie<br class="mb-2">Recommender</h1>
+                            <h1 class="fw-black text-pink mb-2 fade-in">Movie<br class="mb-1">Recommender</h1>
                             <h4 class="fw-semibold text-mint mb-4 mt-3 fade-in">Find the perfect movies for any mood,<br class="mb-1">any occasion.</h4>
                             <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
-                                <a class="btn btn-md py-btn-y rounded-pill move-up fade-in text-dark" href="#features">START NOW!</a>
+                                <a class="btn btn-md py-btn-y rounded-pill move-up fade-in button-gradient text-dark" href="#features">START NOW!</a>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </header>
+        <!-- Intro to features -->
+        <div id="features"></div>
+        <div>
+            <h2 class="intro fw-bolder sam">Choose your<br>recommendation<br>algorithm:</h2>
+        </div>
         <!-- Features section-->
-        <section class="py-5 border-bottom" style="background-color: #25313C;" id="features">
+        <section class="py-5 sam">
             <div class="container px-5 my-5">
                 <div class="row gx-5 text-light">
-                    <div class="col-lg-card me-lg-4 fade-in">
+                    <div class="col-lg-card me-lg-4">
                         <div class="feature bg-primary bg-gradient text-white rounded-3 mb-3 mt-4"></div>
                         <div class="mx-2 my-3">
                             <h2 class="h4 fw-bolder card-title">EXPLORE MOVIES BY GENRE</h2>
                             <p class="card-desc">Browse the top movies in each category ranked by audience score, popularity, or both!</p>
-                            <a class="btn default-gradient btn-sm rounded-pill font-dark py-2 mb-4" href="movies_by_genre">
+                            <a class="btn button-gradient btn-sm rounded-pill font-dark py-2 mb-3" href="movies_by_genre">
                             BY GENRE
                             </a>
                         </div>
                     </div>
-                    <div class="col-lg-card me-lg-4 fade-in">
+                    <div class="col-lg-card me-lg-4">
                         <div class="feature bg-primary bg-gradient text-white rounded-3 mb-3 mt-4"></div>
                         <div class="mx-2 my-3">
                             <h2 class="h4 fw-bolder card-title">LOOK FOR SIMILAR MOVIES</h2>
                             <p class="card-desc">Give us the name of one movie you love and we&rsquo;ll give you a list of similar movies you&rsquo;ll love as well!</p>
-                            <a class="btn default-gradient btn-sm rounded-pill font-dark py-2 mb-4" href="#!">
+                            <a class="btn button-gradient btn-sm font-bolder rounded-pill font-dark py-2 mb-3" href="#!">
                                 BY SIMILARITY
                             </a>
                         </div>
                     </div>
-                    <div class="col-lg-card fade-in">
+                    <div class="col-lg-card">
                         <div class="feature bg-primary bg-gradient text-white rounded-3 mb-3 mt-4"></div>
                         <div class="mx-2 my-3">
                             <h2 class="h4 fw-bolder card-title">FIND BY DESCRIPTION</h2>
                             <p class="card-desc">Answer five short questions about the movie you are looking for, and we&rsquo;ll surprise you with a list of movie recommendations!</p>
-                            <a class="btn default-gradient btn-sm rounded-pill font-dark py-2 mb-4" href="#!">
+                            <a class="btn button-gradient btn-sm rounded-pill font-dark py-2 mb-3" href="#!">
                                 BY DESCRIPTION
                             </a>
                         </div>
@@ -69,13 +74,13 @@
             </div>
         </section>
         <!-- Footer-->
-        <footer class="py-5" style="background-color: #25313C;">
-            <div class="container px-5"><p class="m-0 text-center text-pink fw-bolder">Copyright &copy; Cadey Chen 2024</p></div>
+        <footer class="py-5">
+            <div class="px-5"><p class="m-0 text-center text-mint fw-bolder">Copyright &copy; Cadey Chen 2024</p></div>
         </footer>
         <!-- Bootstrap core JS-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
         <!-- Core theme JS-->
-        <script src="js/scripts.js"></script>
+        <script defer src="{% static '/js/app.js' %}"></script>
         <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
         <!-- * *                               SB Forms JS                               * *-->
         <!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->
