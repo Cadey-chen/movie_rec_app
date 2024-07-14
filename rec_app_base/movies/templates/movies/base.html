@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
     <head>
@@ -14,6 +15,8 @@
                 --bs-font-sans-serif: 'Raleway', sans-serif;
                 --bs-body-font-family: var(--bs-font-sans-serif);
                 --bs-font-monospace: 'VT323', monospace;
+                background-color: #25313C;
+                overflow-x: hidden;
             }
             .text-pink {
                 --bs-text-opacity: 1;
@@ -28,56 +31,24 @@
                 color: #25313C !important;
             }
             .fw-black {
-                font-optical-sizing: auto;
                 font-weight: 800;
                 font-style: normal;
             }
-            .display-5 {
-                font-size: calc(1.425rem + 2.1vw);
-                line-height: 1.0;
+            h1, .h1 {
+                font-size: calc(2.1rem + 2.3vw);
             }
-            .btn {
-                --bs-btn-padding-x: 0rem !important;
-                --bs-btn-padding-y: 0rem !important;
-                --bs-btn-border-width: 0px !important;
-                --bs-btn-focus-box-shadow: 0 0 0 0rem;
-                border: none;
+            @media (min-width: 1200px) {
+                h1, .h1 {
+                    font-size: 3.6rem;
+                }
             }
-            .btn-md, .btn-group-md > .btn {
-                --bs-btn-font-size: 1.2rem;
-                font-weight: 700 !important;
-                background-color: rgba(255, 255, 255, 1);
-                background: linear-gradient(120deg, rgba(206,237,246) 12%, rgba(240,222,254) 50%, rgba(180,180,244) 100%);
+            h2, .h2 {
+                font-size: calc(1.83rem + 2vw);
             }
-            .btn-sm, .btn-group-sm > .btn {
-                font-weight: 700 !important;
-                background: linear-gradient(120deg, rgba(206,237,246,1) 12%, rgba(240,222,254,1) 50%, rgba(180,180,244,1) 100%);
-            }
-            .col-lg-card {
-                flex: 0 0 auto;
-                width: 30%;
-                background: #6794BD78;
-                border-radius: 20px;
-            }
-            .me-lg-4 {
-                margin-right: 2.8rem !important;
-            }
-            .default-gradient {
-                background: linear-gradient(120deg, rgba(206,237,246,1) 12%, rgba(240,222,254,1) 50%, rgba(180,180,244,1) 100%);
-            }
-            .py-btn-y {
-                padding-top: 0.65rem !important;
-                padding-bottom: 0.65rem !important;
-            }
-            .card-title {
-                background: linear-gradient(120deg, rgba(206,237,246,1) 12%, rgba(240,222,254,1) 50%, rgba(180,180,244,1) 100%);
-                -webkit-background-clip: text;
-                background-clip: text;
-                -webkit-text-fill-color: transparent;
-            }
-            .card-desc {
-                color: #E7FAFF !important;
-                font-weight: 500 !important;
+            @media (min-width: 1200px) {
+                h2, .h2 {
+                    font-size: 2.8rem;
+                }
             }
             @keyframes fadeIn {
                 from {
@@ -103,6 +74,91 @@
             .move-up {
                 animation: 2s moveUp ease-in-out;
             }
+            .mt-6 {
+                margin-top: 6rem !important;
+            }
+            .btn-md, .btn-group-md > .btn {
+                --bs-btn-font-size: 1.2rem;
+                font-weight: 700 !important;
+                border: none;
+                z-index: 999;
+            }
+            .btn-sm, .btn-group-sm > .btn {
+                --bs-btn-padding-y: 0.25rem;
+                --bs-btn-padding-x: 0.5rem;
+                --bs-btn-font-size: 0.875rem;
+                --bs-btn-border-radius: 0.25rem;
+                border: none;
+                font-weight: 700 !important;
+            }
+            .gradient-circle {
+                position: absolute;
+                max-width: 36%;
+                width: auto;
+                height: auto;
+                margin-top: -15%;
+                left: 75%;
+            }
+            .gradient-wing {
+                position: absolute;
+                max-width: 60%;
+                width: auto;
+                height: auto;
+                top: 50%;
+                margin-left: -8%;
+            }
+            .col-lg-card {
+                flex: 0 0 auto;
+                width: 30%;
+                background: #6794BD78;
+                border-radius: 20px;
+            }
+            @media screen and (max-width: 600px) {
+                .col-lg-card {
+                    width: 100%;
+                    display: block;
+                    margin-bottom: 8%;
+                }
+            }
+            .me-lg-4 {
+                margin-right: 2.8rem !important;
+            }
+            .button-gradient {
+                background: linear-gradient(120deg, rgba(206,237,246,1) 12%, rgba(240,222,254,1) 50%, rgba(180,180,244,1) 100%);
+            }
+            .py-btn-y {
+                padding-top: 0.65rem !important;
+                padding-bottom: 0.65rem !important;
+            }
+            .intro {
+                background: linear-gradient(150deg, rgba(206,237,246,1) 65%, rgba(240,222,254,1) 80%, rgba(212,212,255,1) 100%);
+                -webkit-background-clip: text;
+                background-clip: text;
+                -webkit-text-fill-color: transparent;
+                text-align: right;
+                position: relative;
+                margin-right: 10%;
+                margin-top: 10%;
+            }
+            .card-title {
+                background: linear-gradient(120deg, rgba(206,237,246,1) 0%, rgba(240,222,254,1) 50%, rgba(216,203,244,1) 100%);
+                -webkit-background-clip: text;
+                background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
+            .card-desc {
+                color: #E7FAFF !important;
+                font-weight: 500 !important;
+            }
+            .sam {
+                opacity: 0;
+                transition: all 2s;
+                transform: translateX(100%);
+            }
+            .item-show {
+                opacity: 1;
+                transform: translateX(0);
+            }
         </style>
         {% if title %}
             <title>{{ title }}</title>
@@ -111,6 +167,8 @@
         {% endif %}
     </head>
     <body>
+        <img class="gradient-circle" src="{% static '/assets/gradient_ellipse.png' %}"/>
+        <img class="gradient-wing" src="{% static '/assets/gradient_wing.png' %}"/>
         <div>
             {% block content %}{% endblock %}
         </div>
