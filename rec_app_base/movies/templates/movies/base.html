@@ -23,6 +23,10 @@
                 --bs-text-opacity: 1;
                 color: #CEEDF6 !important;
             }
+            .text-dark {
+                --bs-text-opacity: 1;
+                color: #25313C !important;
+            }
             .fw-black {
                 font-optical-sizing: auto;
                 font-weight: 800;
@@ -32,8 +36,74 @@
                 font-size: calc(1.425rem + 2.1vw);
                 line-height: 1.0;
             }
+            .btn {
+                --bs-btn-padding-x: 0rem !important;
+                --bs-btn-padding-y: 0rem !important;
+                --bs-btn-border-width: 0px !important;
+                --bs-btn-focus-box-shadow: 0 0 0 0rem;
+                border: none;
+            }
+            .btn-md, .btn-group-md > .btn {
+                --bs-btn-font-size: 1.2rem;
+                font-weight: 700 !important;
+                background-color: rgba(255, 255, 255, 1);
+                background: linear-gradient(120deg, rgba(206,237,246) 12%, rgba(240,222,254) 50%, rgba(180,180,244) 100%);
+            }
+            .btn-sm, .btn-group-sm > .btn {
+                font-weight: 700 !important;
+                background: linear-gradient(120deg, rgba(206,237,246,1) 12%, rgba(240,222,254,1) 50%, rgba(180,180,244,1) 100%);
+            }
+            .col-lg-card {
+                flex: 0 0 auto;
+                width: 30%;
+                background: #6794BD78;
+                border-radius: 20px;
+            }
+            .me-lg-4 {
+                margin-right: 2.8rem !important;
+            }
+            .default-gradient {
+                background: linear-gradient(120deg, rgba(206,237,246,1) 12%, rgba(240,222,254,1) 50%, rgba(180,180,244,1) 100%);
+            }
+            .py-btn-y {
+                padding-top: 0.65rem !important;
+                padding-bottom: 0.65rem !important;
+            }
+            .card-title {
+                background: linear-gradient(120deg, rgba(206,237,246,1) 12%, rgba(240,222,254,1) 50%, rgba(180,180,244,1) 100%);
+                -webkit-background-clip: text;
+                background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
+            .card-desc {
+                color: #E7FAFF !important;
+                font-weight: 500 !important;
+            }
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
+            @keyframes moveUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(4vh);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            .fade-in {
+                animation: fadeIn 3s ease-in-out;
+            }
+            .move-up {
+                animation: 2s moveUp ease-in-out;
+            }
         </style>
-
         {% if title %}
             <title>{{ title }}</title>
         {% else %}
