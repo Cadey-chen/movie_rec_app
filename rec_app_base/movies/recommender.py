@@ -6,6 +6,7 @@ from ast import literal_eval
 from nltk.stem.snowball import SnowballStemmer
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer 
 from sklearn.metrics.pairwise import linear_kernel, cosine_similarity
+from fuzzywuzzy import process, fuzz
 from .models import Movie
 
 import warnings;
@@ -307,3 +308,32 @@ def user_defined_recommender(input_genres, input_keywords, input_overview, num_m
     result_ids = []
     save_movies(result, result_ids)
     return result_ids
+
+
+movie_title_list = base_df['title'].unique().tolist()
+
+# find_sim_titles finds similar movie names in the db with the input_title supplied 
+# based on string comparison 
+def find_sim_titles(input_title):
+    results = process.extract(input_title, movie_title_list, scorer=fuzz.token_set_ratio)
+    titles = map(lambda x: x[0], results)
+    return list(titles)
+
+# find the movie in base_df based on title 
+def movie_by_title(title, title_arr):
+    movie = base_df[base_df['title'] == title]
+    if movie.shape[0] == 1:
+        title_arr.append({'title': movie['title'].item(), 'release_date': movie['release_date'].item()})
+    else:
+        for idx, row in movie.iterrows():
+            title_arr.append({'title': row['title'].item(), 'release_date': row['release_date'].item()})
+
+# process_sim_titles finds movie titles of a similar title 
+# and generates an array of movie title and release_date in tuples 
+def process_sim_titles(input_title):
+    sim_titles = find_sim_titles(input_title)
+    title_arr = []
+    for title in sim_titles:
+        movie_by_title(title, title_arr)
+    return title_arr
+

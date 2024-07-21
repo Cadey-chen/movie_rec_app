@@ -1,0 +1,20 @@
+{% extends "./base.html" %}
+{% block content %}
+    <h1 class="fw-black text-pink">Look for Similar Movies</h1>
+    <div class="input-group">
+        <form action="" method="GET">
+            <div class="form-outline">
+                <input type="search" id="search-bar" class="form-control" placeholder="Search" name="movie_name"/>
+            </div>
+            <button type="submit" class="btn btn-secondary">
+                <i class="bi bi-search"></i>
+            </button>
+        </form>
+    </div>
+    {% if search_results %}
+            {% for movie in search_results %}
+                <h3 class="fw-bolder card-title">{{ movie.title }}</h3>
+                <p class="text-mint">Released on: {{ movie.release_date }}</p>
+            {% endfor %}
+    {% endif %}
+{% endblock content %}

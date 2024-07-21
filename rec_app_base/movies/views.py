@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 import os 
 from .models import Movie
-from .recommender import movies_by_genre, find_matches, user_defined_recommender
+from .recommender import movies_by_genre, find_matches, user_defined_recommender, process_sim_titles
 from .process_images import fetch_images
 from .forms import GenreForm
 
@@ -19,19 +19,22 @@ romance_movies = []
 # movies_by_genre("Adventure", "ratings", 10)
 # find_matches("The Matrix", 10)
 
-# get_movies_by_genre gets the movie metadata and downloads 
-# images from the TMDB database 
-def get_movies_by_genre(genre, rank_type, num_movies):
-    movie_ids = movies_by_genre(genre, rank_type, num_movies)
-    print(movie_ids)
-    # fetch the movie poster from TMDB API
+# query_movies queries movie objects from the database
+def query_movies(movie_ids):
+    # fetch images for movie_ids first
     fetch_images(movie_ids)
-
     result = []
     # fetch movies from db by id
     for movie_id in movie_ids:
         cur_movie = Movie.objects.get(movie_id=movie_id)
         result.append(cur_movie)
+    return result 
+
+# get_movies_by_genre gets the movie metadata and downloads 
+# images from the TMDB database 
+def get_movies_by_genre(genre, rank_type, num_movies):
+    movie_ids = movies_by_genre(genre, rank_type, num_movies)
+    result = query_movies(movie_ids)
     return result 
 
 # home view 
@@ -60,6 +63,16 @@ def movies_by_genre_view(request):
             "form": genre_form
         }
         return render(request, "movies/genre_form.html", context)
+    
+# movies by similarity view 
+def movies_by_similarity(request):
+    context = {}
+    if "movie_name" in request.GET:
+        movie_name = request.GET["movie_name"]
+        results = process_sim_titles(movie_name)
+        print(results)
+        context["search_results"] = results
+    return render(request, "movies/movies_by_similarity.html", context)
 
 # about view
 def about(request):
