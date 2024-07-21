@@ -8,6 +8,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.metrics.pairwise import linear_kernel, cosine_similarity
 from fuzzywuzzy import process, fuzz
 from .models import Movie
+from concurrent.futures import ThreadPoolExecutor, wait
+from .process_images import fetchPosterById
 
 import warnings;
 warnings.simplefilter('ignore')
@@ -117,18 +119,27 @@ base_df['bavg_rating'] = base_df.apply(bayesian_average, axis=1)
 
 df_by_bavg = base_df.sort_values('bavg_rating', ascending=[False])
 
-# save_movies takes in a pandas dataframe of movie metadata 
+# save_movie takes in a pandas dataframe of movie metadata 
 # saves these movies into the database if not already saved,
 # and appends the ids in order 
-def save_movies(movies_list, movie_ids):
+def save_movie(movie):
+    if Movie.objects.filter(movie_id=movie['id']).exists():
+            return
+    movie_id, title, desc, cur_genre, release_date, vote_count, rating = movie['id'], movie['title'], movie['overview'], ', '.join(movie['genres']), movie['release_date'], movie['vote_count'], movie['vote_average']
+    cur_movie = Movie(movie_id=movie_id, title=title, desc=desc, genre=cur_genre, release_date=release_date, vote_count=vote_count, rating=rating)
+    cur_movie.save()
+    fetchPosterById(movie_id)
+    movie_obj = Movie.objects.get(movie_id=movie_id)
+    print(movie_obj)
+
+# write_movies writes movies in movies_list as data objects into the database 
+def write_movies(movies_list):
     # save result to db
-    for index, row in movies_list.iterrows():
-        movie_id, title, desc, cur_genre, release_date, vote_count, rating = row['id'], row['title'], row['overview'], ', '.join(row['genres']), row['release_date'], row['vote_count'], row['vote_average']
-        movie_ids.append(movie_id)
-        if Movie.objects.filter(movie_id=movie_id).exists():
-            continue
-        cur_movie = Movie(movie_id=movie_id, title=title, desc=desc, genre=cur_genre, release_date=release_date, vote_count=vote_count, rating=rating)
-        cur_movie.save()
+    MAX_THREADS = 5
+    # write movie objects in threads 
+    with ThreadPoolExecutor(max_workers=MAX_THREADS) as executor:
+        futures = [executor.submit(save_movie, row) for idx, row in movies_list.iterrows()]
+        wait(futures)
 
 # a method to recommend the top movies from each genre 
 def movies_by_genre(genre, query_type, selection):
@@ -142,8 +153,8 @@ def movies_by_genre(genre, query_type, selection):
             result = df_by_bavg[(df_by_nv["genres"].notnull()) & (df_by_bavg["genres"].apply(lambda x: genre in x))]
     result = result.head(selection)
     # save result to db
-    result_ids = []
-    save_movies(result, result_ids)
+    result_ids = result['id'].values
+    write_movies(result)
     return result_ids
 
 # Use TF-IDF Vectorizer to help us find similarities between movie descriptions 
@@ -250,7 +261,6 @@ def find_matches(movie_title, num_movies):
     result = sorted_movies.head(num_movies)
     # save result to db
     result_ids = []
-    save_movies(result, result_ids)
     return result_ids
 
 
@@ -306,7 +316,6 @@ def user_defined_recommender(input_genres, input_keywords, input_overview, num_m
     result = sorted_movies.head(num_movies)
     # save result to db
     result_ids = []
-    save_movies(result, result_ids)
     return result_ids
 
 
@@ -326,7 +335,7 @@ def movie_by_title(title, title_arr):
         title_arr.append({'title': movie['title'].item(), 'release_date': movie['release_date'].item()})
     else:
         for idx, row in movie.iterrows():
-            title_arr.append({'title': row['title'].item(), 'release_date': row['release_date'].item()})
+            title_arr.append({'title': row['title'], 'release_date': row['release_date']})
 
 # process_sim_titles finds movie titles of a similar title 
 # and generates an array of movie title and release_date in tuples 

@@ -63,8 +63,6 @@ def fetchPosterById(movie_id):
             # format the image url
             image_url = "{base}{size}{file}".format(base=base_url, size=img_size, file=file_path)
             save_poster(movie_id, cur_movie, image_url)
-        else:
-            print(res)
 
 
 MAX_THREADS = 4
