@@ -66,13 +66,25 @@ def movies_by_genre_view(request):
     
 # movies by similarity view 
 def movies_by_similarity(request):
-    context = {}
-    if "movie_name" in request.GET:
-        movie_name = request.GET["movie_name"]
-        results = process_sim_titles(movie_name)
-        print(results)
-        context["search_results"] = results
-    return render(request, "movies/movies_by_similarity.html", context)
+    if request.method == "POST":
+        movie_selection = request.POST["movie_selection"]
+        print(movie_selection)
+        # find matching movies 
+        movies_list = find_matches(int(movie_selection), None, 10)
+        results = query_movies(movies_list)
+        context = {
+            "movies": results,
+            "title": "Similar Movies"
+        }
+        return render(request, "movies/sim_movies.html", context)
+    else:
+        context = {}
+        if "movie_name" in request.GET:
+            movie_name = request.GET["movie_name"]
+            results = process_sim_titles(movie_name)
+            print(results)
+            context["search_results"] = results
+        return render(request, "movies/movies_by_similarity.html", context)
 
 # about view
 def about(request):
