@@ -13,8 +13,12 @@
     </div>
     {% if search_results %}
             {% for movie in search_results %}
-                <h3 class="fw-bolder card-title">{{ movie.title }}</h3>
-                <p class="text-mint">Released on: {{ movie.release_date }}</p>
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <input class="h4 fw-bolder card-title input-underline" type="submit" name="movie_selection" value="{{ movie.title }}">
+                    <input class="h4 fw-bolder card-title input-underline" type="hidden" name="movie_selection" value="{{ movie.id }}">
+                    <p class="text-mint fw-normal">Release Date: {{ movie.release_date }}</p>
+                </form>
             {% endfor %}
     {% endif %}
 {% endblock content %}

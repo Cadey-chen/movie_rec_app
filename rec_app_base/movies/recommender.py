@@ -90,6 +90,9 @@ base_df['production_countries'] = base_df['production_countries'].fillna('[]').a
 # process production_companies to make it only the company and studio names
 base_df['production_companies'] = base_df['production_companies'].fillna('[]').apply(literal_eval).apply(lambda x: [i['name'].lower().replace(" ", "") for i in x] if isinstance(x, list) else [])
 
+# only keep unique ids in base_df
+base_df = base_df.drop_duplicates(subset=['id'], keep='first')
+
 # find the top movies by vote_average
 df_by_va = base_df.sort_values('vote_average', ascending=[False])
 
@@ -194,11 +197,17 @@ cos_sim_score = linear_kernel(df_matrix, df_matrix)
 base_df[base_df['title'] == 'La La Land']
 
 base_df = base_df.reset_index()
-indices = pd.Series(base_df.index, index=base_df['title'])
+title_indices = pd.Series(base_df.index, index=base_df['title'])
+id_indices = pd.Series(base_df.index, index=base_df['id'])
 
 # find similar movies by description
-def sim_movies_by_desc(movie_id):
-    idx = indices[movie_id]
+# find similar movies by description
+def sim_movies_by_desc(movie_id=None, movie_title=None):
+    idx = 0
+    if movie_id:
+        idx = id_indices[movie_id]
+    if movie_title:
+        idx = title_indices[movie_title]
     cos_arr = cos_sim_score[idx]
     scores = sorted(list(enumerate(cos_arr)), key=lambda x: x[1], reverse=True)
     top_match = [(x[0], x[1]*100) for x in scores[1:26]]
@@ -248,10 +257,16 @@ def calculate_score(target_movie, src_kw, src_gr, src_st, src_va):
     return tags_sim
 
 
-def find_matches(movie_title, num_movies):
-    target_movies = sim_movies_by_desc(movie_title).head(25)
+def find_matches(movie_id=None, movie_title=None, num_movies=0):
+    target_movies = None
+    if movie_id:
+        target_movies = sim_movies_by_desc(movie_id, None).head(25)
+    if movie_title:
+        target_movies = sim_movies_by_desc(None, movie_title).head(25)
+        movie_id = base_df[base_df['id'] == movie_id]['id'].item()
+    target_movies = sim_movies_by_desc(movie_id, movie_title).head(25)
     # find similaritie score for the movies returned 
-    src = base_df[base_df['title'] == movie_title]
+    src = base_df[base_df['id'] == movie_id]
     
     # tags_sim is the similarity between genres, keywords, ratings, and popularity tags 
     target_movies['tags_sim'] = target_movies.apply(calculate_score, axis=1, args=(src['keywords'].to_list()[0], src['genres'].to_list()[0], src['production_companies'].to_list()[0], src['vote_average']))
@@ -260,7 +275,8 @@ def find_matches(movie_title, num_movies):
     sorted_movies = rank_movies_overall(target_movies, 0.20, 0.80)
     result = sorted_movies.head(num_movies)
     # save result to db
-    result_ids = []
+    result_ids = result['id'].values
+    write_movies(result)
     return result_ids
 
 
@@ -332,10 +348,10 @@ def find_sim_titles(input_title):
 def movie_by_title(title, title_arr):
     movie = base_df[base_df['title'] == title]
     if movie.shape[0] == 1:
-        title_arr.append({'title': movie['title'].item(), 'release_date': movie['release_date'].item()})
+        title_arr.append({'title': movie['title'].item(), 'release_date': movie['release_date'].item(), 'id': movie['id'].item()})
     else:
         for idx, row in movie.iterrows():
-            title_arr.append({'title': row['title'], 'release_date': row['release_date']})
+            title_arr.append({'title': row['title'], 'release_date': row['release_date'], 'id': row['id']})
 
 # process_sim_titles finds movie titles of a similar title 
 # and generates an array of movie title and release_date in tuples 
