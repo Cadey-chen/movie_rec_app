@@ -1,0 +1,31 @@
+{% extends "./base.html" %}
+{% block content %}
+    {% if genre %}
+        <h2 class="fw-bold page-title text-center my-7">Top {{ num_movies }} {{ genre }} Movies<br>by {{ rank_type }}</h2>
+    {% endif %}
+    {% if movie_title %}
+        <h2 class="fw-bold page-title text-center my-7">Top Similar Movies of<br>{{ movie_title }}</h2>
+    {% endif %}
+    {% for movie in movies %}
+    <div class="mt-5 mb-5"></div>
+        <div class="movie-card top-layer">
+            <div class="mx-5 my-6 card-flow">
+                {% if movie.img %}
+                <div class="left">
+                    <img src="{{ movie.img.url }}" class="d-block" width="80%">
+                </div>
+                {% endif %}
+                <div class="right">
+                    <h2 class="fw-bolder card-title mb-3 mt-2">{{ movie.title }}</h2>
+                    <div class="card-desc">
+                        <p><span class="text-smint fw-bolder">Release Date: </span><span>{{ movie.release_date }}</span></p>
+                        <p><span class="text-smint fw-bolder">Genres: </span><span>{{ movie.genre }}</span></p>
+                        <p><span class="text-smint fw-bolder">Audience Score: </span><span>{{ movie.rating }}</span></p>
+                        <p><span class="text-smint fw-bolder">Votes Count: </span><span>{{ movie.vote_count }}</span></p>
+                        <p><span class="text-smint fw-bolder">Overview: </span><span>{{ movie.desc }}</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock content %}

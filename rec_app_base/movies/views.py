@@ -53,9 +53,12 @@ def movies_by_genre_view(request):
             movies_list = get_movies_by_genre(genre_choice, rank_choice, num_choice)
             context = {
                 "movies": movies_list,
-                "title": "Top {num_str} {genre_str} movies".format(num_str=num_choice, genre_str=genre_choice)
+                "genre": genre_choice,
+                "num_movies": num_choice,
+                "rank_type": rank_choice,
+                "title": "Top {num_str} {genre_str} movies by {rank_type}".format(num_str=num_choice, genre_str=genre_choice, rank_type=rank_choice)
             }
-            return render(request, "movies/movies_by_genre.html", context)
+            return render(request, "movies/movies_list.html", context)
     else:
         genre_form = GenreForm()
         context = {
@@ -68,15 +71,18 @@ def movies_by_genre_view(request):
 def movies_by_similarity(request):
     if request.method == "POST":
         movie_selection = request.POST["movie_selection"]
+        movie_name = request.POST["movie_name"]
         print(movie_selection)
+        print(movie_name)
         # find matching movies 
         movies_list = find_matches(int(movie_selection), None, 10)
         results = query_movies(movies_list)
         context = {
             "movies": results,
-            "title": "Similar Movies"
+            "title": "Similar Movies to {movie_name}".format(movie_name=movie_name),
+            "movie_title": movie_name
         }
-        return render(request, "movies/sim_movies.html", context)
+        return render(request, "movies/movies_list.html", context)
     else:
         context = {}
         if "movie_name" in request.GET:

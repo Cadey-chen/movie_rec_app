@@ -1,9 +1,19 @@
 {% extends "./base.html" %}
 {% block content %}
-    <h1>Genre Selection Form</h1>
-    <form action="" method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Search">
-    </form>
+    <h1 class="fw-black text-pink text-center mt-10">Explore by Genre</h1>
+        <form action="" method="post">
+            {% csrf_token %}
+            <div class="menu-flow mt-5 mb-4 mx-auto">
+                <div class="menu-element">
+                    {{ form.genre }}
+                </div>
+                <div class="menu-element ms-lg-4">
+                    {{ form.rank_type }}
+                </div>
+                <div class="menu-element ms-lg-4">
+                    {{ form.num_movies }}
+                </div>
+            </div>
+            <input class="top-layer menu-flow mx-auto btn btn-md py-btn-y rounded-pill button-gradient text-dark" type="submit" value="EXPLORE">
+        </form>
 {% endblock content %}
