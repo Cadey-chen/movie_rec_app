@@ -15,7 +15,7 @@
             {% for movie in search_results %}
                 <form action="" method="POST">
                     {% csrf_token %}
-                    <input class="h4 fw-bolder card-title input-underline" type="submit" name="movie_selection" value="{{ movie.title }}">
+                    <input class="h4 fw-bolder card-title input-underline" type="submit" name="movie_name" value="{{ movie.title }}">
                     <input class="h4 fw-bolder card-title input-underline" type="hidden" name="movie_selection" value="{{ movie.id }}">
                     <p class="text-mint fw-normal">Release Date: {{ movie.release_date }}</p>
                 </form>
