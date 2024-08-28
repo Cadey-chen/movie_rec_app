@@ -1,9 +1,9 @@
 {% extends "./base.html" %}
 {% block content %}
-    <h1 class="fw-black text-pink text-center mt-10">Explore by Genre</h1>
+    <h1 class="fw-black text-pink text-center mt-8">Explore by Genre</h1>
         <form action="" method="post">
             {% csrf_token %}
-            <div class="menu-flow mt-5 mb-4 mx-auto">
+            <div class="menu-flow my-6 mx-auto">
                 <div class="menu-element">
                     {{ form.genre }}
                 </div>
@@ -14,6 +14,6 @@
                     {{ form.num_movies }}
                 </div>
             </div>
-            <input class="top-layer menu-flow mx-auto btn btn-md py-btn-y rounded-pill button-gradient text-dark" type="submit" value="EXPLORE">
+            <input class="menu-flow mx-auto btn btn-md py-btn-y rounded-pill button-gradient text-dark mt-5" type="submit" value=" EXPLORE ">
         </form>
 {% endblock content %}

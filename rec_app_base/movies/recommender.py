@@ -90,9 +90,6 @@ base_df['production_countries'] = base_df['production_countries'].fillna('[]').a
 # process production_companies to make it only the company and studio names
 base_df['production_companies'] = base_df['production_companies'].fillna('[]').apply(literal_eval).apply(lambda x: [i['name'].lower().replace(" ", "") for i in x] if isinstance(x, list) else [])
 
-# only keep unique ids in base_df
-base_df = base_df.drop_duplicates(subset=['id'], keep='first')
-
 # find the top movies by vote_average
 df_by_va = base_df.sort_values('vote_average', ascending=[False])
 
@@ -215,6 +212,7 @@ def sim_movies_by_desc(movie_id=None, movie_title=None):
     match_dict = dict(top_match)
     matched_movies = base_df.iloc[movie_indices]
     matched_movies['desc_sim'] = matched_movies.index.map(match_dict) 
+    matched_movies = matched_movies.drop_duplicates(subset=['id'], keep='first')
     return matched_movies
 
 # overall_sim is the average of desc_sim and tags_sim, when 
@@ -259,12 +257,12 @@ def calculate_score(target_movie, src_kw, src_gr, src_st, src_va):
 
 def find_matches(movie_id=None, movie_title=None, num_movies=0):
     target_movies = None
-    if movie_id:
-        target_movies = sim_movies_by_desc(movie_id, None).head(25)
+    m_len = 0
     if movie_title:
-        target_movies = sim_movies_by_desc(None, movie_title).head(25)
-        movie_id = base_df[base_df['id'] == movie_id]['id'].item()
-    target_movies = sim_movies_by_desc(movie_id, movie_title).head(25)
+        movie_id = base_df[base_df['title'] == movie_title]['id'].item()
+    top_sim_by_desc = sim_movies_by_desc(movie_id, None)
+    m_len = min(25, len(top_sim_by_desc.index))
+    target_movies = top_sim_by_desc.head(m_len)
     # find similaritie score for the movies returned 
     src = base_df[base_df['id'] == movie_id]
     
@@ -340,7 +338,7 @@ movie_title_list = base_df['title'].unique().tolist()
 # find_sim_titles finds similar movie names in the db with the input_title supplied 
 # based on string comparison 
 def find_sim_titles(input_title):
-    results = process.extract(input_title, movie_title_list, scorer=fuzz.token_set_ratio)
+    results = process.extract(input_title, movie_title_list, scorer=fuzz.ratio)
     titles = map(lambda x: x[0], results)
     return list(titles)
 

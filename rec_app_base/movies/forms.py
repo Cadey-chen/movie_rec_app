@@ -31,6 +31,6 @@ NUM_MOVIES = [
 ]
 
 class GenreForm(forms.Form):
-    genre = forms.ChoiceField(choices=GENRES, label='Genre', widget=forms.Select(attrs={'class': 'dropdown show'}))
-    rank_type = forms.ChoiceField(choices=RANK_TYPES, label="Rank by", widget=forms.Select(attrs={'class': 'form-control dropdown-toggle'}))
-    num_movies = forms.ChoiceField(choices=NUM_MOVIES, label='Number of Movies', widget=forms.Select(attrs={'class': 'form-control'}))
+    genre = forms.ChoiceField(choices=GENRES, label='Genre', widget=forms.Select(attrs={"class": "form-select text-center fw-bold", "style": "border-radius: 8px;"}))
+    rank_type = forms.ChoiceField(choices=RANK_TYPES, label="Rank by", widget=forms.Select(attrs={"class": "form-select text-center fw-bold", "style": "border-radius: 8px;"}))
+    num_movies = forms.ChoiceField(choices=NUM_MOVIES, label='Number of Movies', widget=forms.Select(attrs={"class": "form-select text-center fw-bold", "style": "border-radius: 8px;"}))
