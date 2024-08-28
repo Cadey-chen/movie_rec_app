@@ -1,14 +1,14 @@
 {% extends "./base.html" %}
 {% block content %}
     {% if genre %}
-        <h2 class="fw-bold page-title text-center my-7">Top {{ num_movies }} {{ genre }} Movies<br>by {{ rank_type }}</h2>
+        <h2 class="fw-bold page-title text-center mx-auto my-7" style="max-width: 25ch;">Top {{ num_movies }} {{ genre }} Movies<br>by {{ rank_type }}</h2>
     {% endif %}
     {% if movie_title %}
-        <h2 class="fw-bold page-title text-center my-7">Top Similar Movies of<br>{{ movie_title }}</h2>
+        <h2 class="fw-bold page-title text-center mx-auto my-7" style="max-width: 25ch;">Top Similar Movies of<br>{{ movie_title }}</h2>
     {% endif %}
     {% for movie in movies %}
     <div class="mt-5 mb-5"></div>
-        <div class="movie-card top-layer">
+        <div class="movie-card top-layer" style="width: 70%;">
             <div class="mx-5 my-6 card-flow">
                 {% if movie.img %}
                 <div class="left">
