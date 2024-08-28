@@ -4,6 +4,7 @@
 /rec_app_base/movies/migrations
 /rec_app_base/movies/templates/movies/posters
 /rec_app_base/rec_app_base/__pycache__
+/rec_app_base/rec_app_base/settings.py
 /rec_app_base/movies/assets
 /rec_app_base/movies/config
 /rec_app_base/movies/templates/movies/css
