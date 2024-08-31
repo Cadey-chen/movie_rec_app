@@ -1,0 +1,47 @@
+{% extends "./base.html" %}
+{% block content %}
+{% load static %}
+<body>
+    <script defer src="{% static '/js/form_script.js' %}"></script>
+    <form multi-step-survey action="" method="post">
+        {% csrf_token %}
+        <div class="active text-center my-7 card" data-step style="background-color: transparent;">
+            <h1 class="fw-black text-pink mt-3">Find by<br>Description</h1>
+            <h4 class="fw-semibold text-mint my-3" style="max-width: 40ch; text-align: center; margin: 0 auto; line-height: 1.5;">Answer a few short questions about the movie you are looking for, and we'll surprise you!</h4>
+            <button next-page type="button" class="btn btn-md py-btn-y rounded-pill button-gradient my-2">START!</button>
+        </div>
+        <div class="card my-7" data-step style="background-color: #6794BD78;">
+            <h3 name="title-1" class="text-pink mx-auto text-center my-6 fw-bolder">Choose one or more genres:</h3>
+            <div class="button-flow mx-auto">
+                {% for genre in genres %}
+                    <button class="genre-btn btn btn-md py-btn-y rounded-pill text-dark button-element mx-2 my-2" style="background: #D4F2F6;">{{ genre }}</button>
+                {% endfor %}
+            </div>
+            <div class="text-center">
+                <button next-page type="button" class="btn btn-md py-btn-y rounded-pill button-gradient my-4">NEXT</button>
+            </div>
+        </div>
+        <div class="card my-7 p-3" data-step style="background-color: #6794BD78;">
+            <h3 name="title-2" class="text-pink mx-auto text-center my-6 fw-bold">Enter keywords for the movie you are looking for, enter as many as you want, comma separated:</h3>
+            <div class="form-group">
+                <textarea type="keywords" name="keywords" id="keywords" class="form-control w-90 mx-auto" rows="3"></textarea>
+            </div>
+            <div class="text-center">
+                <button prev-page type="button" class="btn btn-md py-btn-y rounded-pill button-gradient my-4 mx-1">PREVIOUS</button>
+                <button next-page type="button" class="btn btn-md py-btn-y rounded-pill button-gradient my-4">NEXT</button>
+            </div>
+        </div>
+        <div class="card my-7 p-3" data-step style="background-color: #6794BD78;">
+            <h3 name="title-3" class="text-pink mx-auto text-center my-4 fw-bold">Enter a brief description for the kind of story you are looking for, any details welcome:</h3>
+            <div class="form-group">
+                <textarea type="desc" name="desc" id="desc" class="form-control w-90 mx-auto" rows="7"></textarea>
+            </div>
+            <div class="text-center">
+                <button prev-page type="button" class="btn btn-md py-btn-y rounded-pill button-gradient my-4 mx-1">PREVIOUS</button>
+                <input type="hidden" id="survey-data" name="survey-data" class="survey-data">
+                <button type="button" class="mx-auto btn btn-md py-btn-y rounded-pill button-gradient text-dark card-subtitle my-4" onclick="submitSurvey()"> SUBMIT</button>
+            </div>
+        </div>
+    </form>
+</body>
+{% endblock content %}
