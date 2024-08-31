@@ -5,14 +5,18 @@ class Movie(models.Model):
     genres = [
         ("Action", "Action"),
         ("Adventure", "Adventure"),
+        ("Animation", "Animation"),
         ("Comedy", "Comedy"),
         ("Crime", "Crime"),
         ("Documentary", "Documentary"),
         ("Drama", "Drama"),
         ("Family", "Family"),
         ("Fantasy", "Fantasy"),
+        ("History", "History"),
+        ("Mystery", "Mystery"),
         ("Romance", "Romance"),
         ("Science Fiction", "Science Fiction"),
+        ("Thriller", "Thriller"),
         ("Western", "Western"),
     ]
 
