@@ -5,6 +5,7 @@ from .models import Movie
 from .recommender import movies_by_genre, find_matches, user_defined_recommender, process_sim_titles
 from .process_images import fetch_images
 from .forms import GenreForm
+import json
 
 # custom genres, keywords, and description inputs for a historical romance movie
 # in the English countryside to test the user defined recommender
@@ -91,6 +92,37 @@ def movies_by_similarity(request):
             print(results)
             context["search_results"] = results
         return render(request, "movies/movies_by_similarity.html", context)
+
+def movies_by_description(request):
+    if request.method == "POST":
+        survey_data = request.POST['survey-data']
+        user_data = json.loads(survey_data)
+        print(user_data)
+        selected_genres = user_data.get("selected_genres")
+        keywords_input = user_data.get("keywords").split(',')
+        keywords = []
+        for keyword in keywords_input:
+            keywords.append(keyword.strip())
+        desc = user_data.get("desc")
+        print(selected_genres)
+        print(keywords)
+        print(desc)
+        # find movie recommendations
+        movies_list = user_defined_recommender(selected_genres, keywords, desc)
+        results = query_movies(movies_list)
+        context = {
+            "movies": results,
+            "title": "Movie Recommendations for you",
+            "custom_title": "Recommendations for you"
+        }
+        return render(request, "movies/movies_list.html", context)
+    else:
+        genres = [genre[0] for genre in Movie.genres]
+        context = {
+            "title": "Movie by Description",
+            "genres": genres
+        }
+        return render(request, "movies/survey.html", context)
 
 # about view
 def about(request):

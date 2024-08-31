@@ -185,6 +185,10 @@
             .button-gradient {
                 background: linear-gradient(120deg, rgba(206,237,246,1) 12%, rgba(240,222,254,1) 50%, rgba(180,180,244,1) 100%);
             }
+            .btn-mint {
+                background: #C5F0F6;
+                width: fit-content;
+            }
             .py-btn-y {
                 padding-top: 0.65rem !important;
                 padding-bottom: 0.65rem !important;
@@ -234,6 +238,39 @@
                 bottom: 0;
                 width: 100%;
             }
+            .card {
+                margin: auto;
+                border-radius: 2rem;
+                padding: 0.5rem;
+                max-width: 60%;
+                display: none;
+                border: none;
+            }
+            .form-group {
+                display: flex;
+                flex-direction: column;
+                gap: 0.25em;
+                margin-bottom: 0.5rem;
+            }
+            .form-group > input {
+                padding: 0.25em;
+                border-radius: 0.5em;
+                border: none;
+            }
+            .card.active {
+                display: block;
+            }
+            .button-flow {
+                display: flex;
+                flex-wrap: wrap;
+                max-width: 90%;
+            }
+            .button-flow .button-element {
+                flex: 1 0 auto;
+            }
+            .w-90 {
+                width: 90% !important;
+            }
         </style>
         {% if title %}
             <title>{{ title }}</title>
@@ -249,7 +286,7 @@
                   <a class="nav-link" href="{% url "home" %}">Home</a>
                   <a class="nav-link" href="{% url "movies-by-genre" %}">By Genre</a>
                   <a class="nav-link" href="{% url "movies-by-similarity" %}">Similarity</a>
-                  <a class="nav-link" href="#">User-Defined</a>
+                  <a class="nav-link" href="{% url "movies-by-description" %}">User-Defined</a>
                 </div>
               </div>
             </div>

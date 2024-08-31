@@ -298,7 +298,7 @@ def find_sim_score(target_movie, src_kw, src_gr):
 
 
 # a movie recommender that recommends 10 films based on user input
-def user_defined_recommender(input_genres, input_keywords, input_overview, num_movies):
+def user_defined_recommender(input_genres, input_keywords, input_overview, num_movies=10):
     # parse and process input data
     genres = [input_genres]
     keywords = [input_keywords]
@@ -329,7 +329,8 @@ def user_defined_recommender(input_genres, input_keywords, input_overview, num_m
     
     result = sorted_movies.head(num_movies)
     # save result to db
-    result_ids = []
+    result_ids = result['id'].values
+    write_movies(result)
     return result_ids
 
 
@@ -338,7 +339,11 @@ movie_title_list = base_df['title'].unique().tolist()
 # find_sim_titles finds similar movie names in the db with the input_title supplied 
 # based on string comparison 
 def find_sim_titles(input_title):
-    results = process.extract(input_title, movie_title_list, scorer=fuzz.ratio)
+    results = []
+    if ' ' in input_title:
+        results = process.extract(input_title, movie_title_list, scorer=fuzz.token_set_ratio)
+    else:
+        results = process.extract(input_title, movie_title_list, scorer=fuzz.ratio)
     titles = map(lambda x: x[0], results)
     return list(titles)
 
