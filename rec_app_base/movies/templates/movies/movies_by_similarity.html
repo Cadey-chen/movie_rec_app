@@ -14,11 +14,11 @@
     {% if search_results %}
         <div class="mx-auto">
             {% for movie in search_results %}
-                <div class="movie-card rounded-pill mt-4 text-center" style="width: 50%;">
+                <div class="movie-card rounded-pill mt-4 text-center" style="min-width: fit-content; width:50%;">
                     <form action="" method="POST" class="my-3">
                         {% csrf_token %}
-                        <input class="h4 fw-bolder card-title input-underline text-center" type="submit" name="movie_name" value="{{ movie.title }}">
-                        <input class="h4 fw-bolder card-title input-underline text-center" type="hidden" name="movie_selection" value="{{ movie.id }}">
+                        <input class="h4 fw-bolder text-mint input-underline text-center" type="submit" name="movie_name" value="{{ movie.title }}">
+                        <input class="h4 fw-bolder text-mint input-underline text-center" type="hidden" name="movie_selection" value="{{ movie.id }}">
                         <p class="text-mint fw-normal">Release Date: {{ movie.release_date }}</p>
                     </form>
                 </div>

@@ -90,11 +90,14 @@ base_df['production_countries'] = base_df['production_countries'].fillna('[]').a
 # process production_companies to make it only the company and studio names
 base_df['production_companies'] = base_df['production_companies'].fillna('[]').apply(literal_eval).apply(lambda x: [i['name'].lower().replace(" ", "") for i in x] if isinstance(x, list) else [])
 
+# filter for unique movie ids only
+unique_df = base_df.drop_duplicates(subset=['id'], keep='first')
+
 # find the top movies by vote_average
-df_by_va = base_df.sort_values('vote_average', ascending=[False])
+df_by_va = unique_df.sort_values('vote_average', ascending=[False])
 
 # find the top movies by number of votes 
-df_by_nv = base_df.sort_values('vote_count', ascending=[False])
+df_by_nv = unique_df.sort_values('vote_count', ascending=[False])
 
 # prepare coefficients for Bayesian average of ratings 
 # and popularity calculation 
@@ -116,8 +119,9 @@ def bayesian_average(mrow):
     return b_avg
 
 base_df['bavg_rating'] = base_df.apply(bayesian_average, axis=1)
+unique_df['bavg_rating'] = unique_df.apply(bayesian_average, axis=1)
 
-df_by_bavg = base_df.sort_values('bavg_rating', ascending=[False])
+df_by_bavg = unique_df.sort_values('bavg_rating', ascending=[False])
 
 # save_movie takes in a pandas dataframe of movie metadata 
 # saves these movies into the database if not already saved,
@@ -315,11 +319,12 @@ def user_defined_recommender(input_genres, input_keywords, input_overview, num_m
     cos_score = find_cosine_sim(base_df, 'short_desc', desc_df, 'desc')
     
     scores = sorted(list(enumerate(cos_score)), key=lambda x: x[1], reverse=True)
-    top_match = [(x[0], (x[1][0] * 100)) for x in scores[1:26]]
+    top_match = [(x[0], (x[1][0] * 100)) for x in scores[1:21]]
     match_dict = dict(top_match)
     movie_indices = [m[0] for m in top_match]
     matched_movies = base_df.iloc[movie_indices]
     matched_movies['desc_sim'] = matched_movies.index.map(match_dict) 
+    matched_movies = matched_movies.drop_duplicates(subset=['id'], keep='first')
     
     # tags_sim is the similarity between genres, keywords, ratings, and popularity tags 
     matched_movies['tags_sim'] = matched_movies.apply(find_sim_score, axis=1, args=(desc_df['keywords'].to_list()[0], desc_df['genres'].to_list()[0]))
