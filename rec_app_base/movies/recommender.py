@@ -17,87 +17,35 @@ warnings.simplefilter('ignore')
 # basic recommender: we first try to recommend the top movies based on ratings
 # or popularity or the Bayesian average of ratings and popularity 
 
-# preprocess the movies metadata 
+# read in base_data
 data_path = os.path.join(os.path.dirname(__file__), 'data')
-d_frame_path = os.path.join(data_path, "movies_metadata.csv")
-keywords_path = os.path.join(data_path, "keywords.csv")
-production_path = os.path.join(data_path, "credits.csv")
+d_frame_path = os.path.join(data_path, "base_data.csv")
 
-d_frame = pd.read_csv(d_frame_path)
-keywords = pd.read_csv(keywords_path)
-production = pd.read_csv(production_path)
+base_df = pd.read_csv(d_frame_path)
 
-d_frame['id'] = pd.to_numeric(d_frame['id'], errors="coerce")
-keywords['id'] = pd.to_numeric(keywords['id'], errors="coerce")
-production['id'] = pd.to_numeric(production['id'], errors="coerce")
+# make genre into list format 
+base_df['genres'] = base_df['genres'].fillna('')
+base_df['genres'] = base_df['genres'].apply(lambda x: [item.strip() for item in x.split(',')])
 
-d_frame = d_frame.dropna(subset=['id'])
-keywords = keywords.dropna(subset=['id'])
-production = production.dropna(subset=['id'])
-
-d_frame['id'] = d_frame['id'].astype('int')
-keywords['id'] = keywords['id'].astype('int')
-production['id'] = production['id'].astype('int')
-
-d_frame = pd.merge(d_frame, keywords, on='id')
-d_frame = pd.merge(d_frame, production, on='id')
-
-# for our base movies dataframe, we filter for movies with an average rating of 7.0 or higher and 
-# with the number of votes higher than the 70th percentile of all vote_count, OR popular movies
-# with more than 90th percentile of vote_count and an average rating of 6.0 or higher 
-
-v_counts = d_frame[d_frame['vote_count'].notnull()]['vote_count'].astype('int')
-v_averages = d_frame[d_frame['vote_average'].notnull()]['vote_average'].astype('int')
-
-v_70q = v_counts.quantile(0.70)
-count_threshold = v_counts.quantile(0.90)
-
-pop_rating_thres = 6.0
-qua_rating_thres = 7.0 
-
-# next we filter the movies based on our criteria 
-filtered_movies = d_frame[(d_frame['vote_count'].notnull()) & (((d_frame['vote_count'] >= count_threshold) & (d_frame['vote_average'] >= pop_rating_thres)) | ((d_frame['vote_count'] >= v_70q) & (d_frame['vote_average'] >= qua_rating_thres)))]
-
-# create base data frame based on selecting specific fields from filtered_movies 
-base_df = filtered_movies[['id','title', 'genres', 'overview', 'tagline', 'vote_count', 'vote_average', 'keywords', 'crew', 'production_countries', 'production_companies', 'release_date']]
-
-# helper function to help us extract the director and writers 
-# from the crew column
-def director_and_writer(crew):
-    crew_arr = []
-    for rec in crew:
-        if rec['job'] == 'Director' or rec['job'] == 'Screenplay':
-            crew_arr.append(rec['name'].lower().replace(" ", ""))
-    return crew_arr
-
-# We process the genres, keywords, crew, production_countries, production_companies 
-# columns to make the data format easier to parse and analyze 
-
-# process genres column to make only names appear 
-base_df['genres'] = base_df['genres'].fillna('[]').apply(literal_eval).apply(lambda x: [i['name'] for i in x] if isinstance(x, list) else [])
-
-# process keywords column to make it only the tags
+# process keywords column with SnowballStemmer
 w_snow = SnowballStemmer('english')
-base_df['keywords'] = base_df['keywords'].fillna('[]').apply(literal_eval).apply(lambda x: [j['name'] for j in x] if isinstance(x, list) else [])
+base_df['keywords'] = base_df['keywords'].fillna('').apply(lambda x: [item.strip() for item in x.split(',')])
 base_df['keywords'] = base_df['keywords'].apply(lambda x: [w_snow.stem(w) for w in x])
 
-# process crew to make it only director and writer 
-base_df['crew'] = base_df['crew'].fillna('[]').apply(literal_eval).apply(director_and_writer)
+# process production countries and production companies to lower case
+base_df['production_countries'] = base_df['production_countries'].fillna('').apply(lambda x: [item.strip() for item in x.split(',')])
+base_df['production_countries'] = base_df['production_countries'].apply(lambda x: [i.lower().replace(" ", "") for i in x] if isinstance(x, list) else [])
 
-# process production_countries to make it only the country names
-base_df['production_countries'] = base_df['production_countries'].fillna('[]').apply(literal_eval).apply(lambda x: [i['name'].lower().replace(" ", "") for i in x] if isinstance(x, list) else [])
+base_df['production_companies'] = base_df['production_companies'].fillna('').apply(lambda x: [item.strip() for item in x.split(',')])
+base_df['production_companies'] = base_df['production_companies'].apply(lambda x: [i.lower().replace(" ", "") for i in x] if isinstance(x, list) else [])
 
-# process production_companies to make it only the company and studio names
-base_df['production_companies'] = base_df['production_companies'].fillna('[]').apply(literal_eval).apply(lambda x: [i['name'].lower().replace(" ", "") for i in x] if isinstance(x, list) else [])
+base_df.head(10)
 
-# filter for unique movie ids only
-unique_df = base_df.drop_duplicates(subset=['id'], keep='first')
+# df_by_va is base_df sorted by average audience ratings 
+df_by_va = base_df.sort_values('vote_average', ascending=[False])
 
-# find the top movies by vote_average
-df_by_va = unique_df.sort_values('vote_average', ascending=[False])
-
-# find the top movies by number of votes 
-df_by_nv = unique_df.sort_values('vote_count', ascending=[False])
+# df_by_nv is base_df sorted by popularity 
+df_by_nv = base_df.sort_values('vote_count', ascending=[False])
 
 # prepare coefficients for Bayesian average of ratings 
 # and popularity calculation 
@@ -119,9 +67,7 @@ def bayesian_average(mrow):
     return b_avg
 
 base_df['bavg_rating'] = base_df.apply(bayesian_average, axis=1)
-unique_df['bavg_rating'] = unique_df.apply(bayesian_average, axis=1)
-
-df_by_bavg = unique_df.sort_values('bavg_rating', ascending=[False])
+df_by_bavg = base_df.sort_values('bavg_rating', ascending=[False])
 
 # save_movie takes in a pandas dataframe of movie metadata 
 # saves these movies into the database if not already saved,
@@ -183,19 +129,16 @@ base_df['overview'] = base_df['overview'].fillna('')
 base_df['tagline'] = base_df['tagline'].fillna('')
 base_df['kw_str'] = base_df['keywords'].apply(lambda x: ' '.join(x))
 base_df['genres_str'] = base_df['genres'].apply(lambda x: ' '.join(x))
-base_df['crew_str'] = base_df['crew'].apply(lambda x: ' '.join(x))
 base_df['countries_str'] = base_df['production_countries'].apply(lambda x: ' '.join(x))
 base_df['studios_str'] = base_df['production_companies'].apply(lambda x: ' '.join(x))
-base_df['desc'] = base_df['overview'] + ' ' + base_df['tagline'] + ' ' + base_df['kw_str'] + ' ' + base_df['genres_str'] + ' ' + base_df['crew_str'] + ' ' + base_df['countries_str']
-base_df['short_desc'] = base_df['overview'] + ' ' + base_df['tagline'] + ' ' + base_df['kw_str'] + ' ' + base_df['genres_str']
+base_df['desc'] = base_df['overview'] + ' ' + base_df['tagline'] + ' ' + base_df['kw_str'] + ' ' + base_df['genres_str'] + ' ' + base_df['countries_str'] + ' ' + base_df['studios_str']
+base_df['short_desc'] = base_df['overview'] + ' ' + base_df['tagline'] + ' ' + base_df['kw_str'] + ' ' + base_df['genres_str'] + ' ' + base_df['countries_str']
 tfid_vec = TfidfVectorizer(analyzer='word', ngram_range=(1,3), stop_words='english')
 tfid_vec.fit(base_df['desc'])
 df_matrix = tfid_vec.transform(base_df['desc'])
 
 # calculate the cosine similarity score between each movie 
 cos_sim_score = linear_kernel(df_matrix, df_matrix)
-
-base_df[base_df['title'] == 'La La Land']
 
 base_df = base_df.reset_index()
 title_indices = pd.Series(base_df.index, index=base_df['title'])
@@ -216,7 +159,6 @@ def sim_movies_by_desc(movie_id=None, movie_title=None):
     match_dict = dict(top_match)
     matched_movies = base_df.iloc[movie_indices]
     matched_movies['desc_sim'] = matched_movies.index.map(match_dict) 
-    matched_movies = matched_movies.drop_duplicates(subset=['id'], keep='first')
     return matched_movies
 
 # overall_sim is the average of desc_sim and tags_sim, when 
@@ -244,7 +186,7 @@ def rank_movies_overall(movies_list, desc_prop, tags_prop):
 
 
 # come up with custom similarity scores on a scale of 1 - 10 between the source movie and target movies 
-def calculate_score(target_movie, src_kw, src_gr, src_st, src_va):
+def calculate_score(target_movie, src_kw, src_gr, src_ct, src_va):
     # source movie is the movie we wish to find similar movies for
     # we take the similarities in keyword (40%), genres(30%), studio (15%), and ratings (15%) into consideration
     maj_weight_factor = 4.0
@@ -252,10 +194,10 @@ def calculate_score(target_movie, src_kw, src_gr, src_st, src_va):
     min_weight_factor = 1.5
     kw_sim = (len(np.intersect1d(src_kw, target_movie['keywords'])) / len(src_kw)) * maj_weight_factor
     gr_sim = (len(np.intersect1d(src_gr, target_movie['genres'])) / len(src_gr)) * med_weight_factor
-    st_sim = (len(np.intersect1d(src_st, target_movie['production_companies'])) / len(src_st)) * min_weight_factor
+    ct_sim = (len(np.intersect1d(src_ct, target_movie['production_countries'])) / len(src_ct)) * min_weight_factor
     # formula for calculating rating similarity 1 - (abs(rating diff))/(source rating)
-    va_sim = (1 - abs(src_va - target_movie['vote_average'])/src_va) * min_weight_factor
-    tags_sim = gr_sim + kw_sim + st_sim + va_sim
+    va_sim = (1 - abs(src_va - target_movie['bavg_rating'])/src_va) * min_weight_factor
+    tags_sim = gr_sim + kw_sim + ct_sim + va_sim
     return tags_sim
 
 
@@ -271,10 +213,10 @@ def find_matches(movie_id=None, movie_title=None, num_movies=0):
     src = base_df[base_df['id'] == movie_id]
     
     # tags_sim is the similarity between genres, keywords, ratings, and popularity tags 
-    target_movies['tags_sim'] = target_movies.apply(calculate_score, axis=1, args=(src['keywords'].to_list()[0], src['genres'].to_list()[0], src['production_companies'].to_list()[0], src['vote_average']))
+    target_movies['tags_sim'] = target_movies.apply(calculate_score, axis=1, args=(src['keywords'].to_list()[0], src['genres'].to_list()[0], src['production_countries'].to_list()[0], src['bavg_rating']))
     
     # sort the movies list by overall similarity score of tags and description
-    sorted_movies = rank_movies_overall(target_movies, 0.20, 0.80)
+    sorted_movies = rank_movies_overall(target_movies, 0.50, 0.50)
     result = sorted_movies.head(num_movies)
     # save result to db
     result_ids = result['id'].values
@@ -291,8 +233,6 @@ def find_sim_score(target_movie, src_kw, src_gr):
     # and take the average of this score with the desc_sim score 
     maj_weight_factor = 4.0
     med_weight_factor = 3.0
-    min_weight_factor = 1.5
-    perfect_score = 10
     kw_sim = (len(np.intersect1d(src_kw, target_movie['keywords'])) / len(src_kw)) * maj_weight_factor
     gr_sim = (len(np.intersect1d(src_gr, target_movie['genres'])) / len(src_gr)) * med_weight_factor
     # give higher ranks to movies with a higher bayesian average 
@@ -313,7 +253,7 @@ def user_defined_recommender(input_genres, input_keywords, input_overview, num_m
     desc_df['keywords'] = desc_df['keywords'].apply(lambda x: [w_snow.stem(w) for w in x])
     desc_df['genres_str'] = desc_df['genres'].apply(lambda x: ' '.join(x))
     desc_df['keywords_str'] = desc_df['keywords'].apply(lambda x: ' '.join(x))
-    desc_df['desc'] = desc_df['overview'] + ' ' + desc_df['genres_str'] + ' ' + desc_df['keywords_str']
+    desc_df['desc'] = desc_df['overview'] + ' ' + desc_df['keywords_str'] + ' ' + desc_df['genres_str']
     
     # Use TF-IDF Vectorizer to find similarity scores between movie descriptions
     cos_score = find_cosine_sim(base_df, 'short_desc', desc_df, 'desc')
@@ -369,4 +309,3 @@ def process_sim_titles(input_title):
     for title in sim_titles:
         movie_by_title(title, title_arr)
     return title_arr
-
