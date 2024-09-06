@@ -27,18 +27,9 @@ class Movie(models.Model):
     release_date = models.DateField()
     vote_count = models.IntegerField(default=0)
     rating = models.DecimalField(max_digits=3, decimal_places=1)
+    poster_path = models.CharField(max_length=200, default=None, null=True)
     img = models.ImageField(default=None, upload_to="posters/", null=True)
 
     def __str__(self):
         return self.title
     
-    """
-    movie_obj = {
-            "Title": self.title,
-            "Release Date": self.release_date,
-            "Genre": self.genre,
-            "Rating": self.rating,
-            "Vote Count": self.vote_count,
-            "Description": self.desc,
-        }
-    """

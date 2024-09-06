@@ -75,8 +75,8 @@ df_by_bavg = base_df.sort_values('bavg_rating', ascending=[False])
 def save_movie(movie):
     if Movie.objects.filter(movie_id=movie['id']).exists():
             return
-    movie_id, title, desc, cur_genre, release_date, vote_count, rating = movie['id'], movie['title'], movie['overview'], ', '.join(movie['genres']), movie['release_date'], movie['vote_count'], movie['vote_average']
-    cur_movie = Movie(movie_id=movie_id, title=title, desc=desc, genre=cur_genre, release_date=release_date, vote_count=vote_count, rating=rating)
+    movie_id, title, desc, cur_genre, release_date, vote_count, rating, poster_path = movie['id'], movie['title'], movie['overview'], ', '.join(movie['genres']), movie['release_date'], movie['vote_count'], movie['vote_average'], movie['poster_path']
+    cur_movie = Movie(movie_id=movie_id, title=title, desc=desc, genre=cur_genre, release_date=release_date, vote_count=vote_count, rating=rating, poster_path=poster_path)
     cur_movie.save()
     fetchPosterById(movie_id)
     movie_obj = Movie.objects.get(movie_id=movie_id)
