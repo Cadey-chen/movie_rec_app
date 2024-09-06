@@ -2,8 +2,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import csv
-from ast import literal_eval
-from nltk.stem.snowball import SnowballStemmer
 
 import warnings;
 warnings.simplefilter('ignore')
@@ -21,7 +19,7 @@ tmdb_dframe[tmdb_dframe['title'] == 'Inception']
 v_counts = tmdb_dframe[tmdb_dframe['vote_count'].notnull()]['vote_count'].astype('int')
 v_averages = tmdb_dframe[tmdb_dframe['vote_average'].notnull()]['vote_average'].astype('int')
 
-v_97q = v_counts.quantile(0.97)
+v_97q = v_counts.quantile(0.975)
 count_threshold = v_counts.quantile(0.99)
 print(v_97q)
 print(count_threshold)
