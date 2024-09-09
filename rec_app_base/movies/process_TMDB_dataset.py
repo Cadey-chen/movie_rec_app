@@ -62,7 +62,23 @@ tmdb_dframe.loc[(tmdb_dframe['release_date'] <= '2017-08-18'), 'overview'] = tmd
 # create base data frame based on selecting specific fields from tmdb_dframe
 base_df = tmdb_dframe[['title', 'genres', 'overview', 'tagline', 'vote_count', 'vote_average', 'keywords', 'production_countries', 'production_companies', 'release_date']]
 
-base_df.head(10)
+# select all documentary movies from themovies_dframe
+themovies_documentaries = themovies_dframe[themovies_dframe['genres'].str.contains('Documentary') == True]
+
+# concatenate themovies_documentaries with base_df 
+base_df = pd.concat([base_df, themovies_documentaries], ignore_index=False)
+
+# remove any possible duplicates as a result of the concatenation
+base_df = base_df[~base_df.index.duplicated(keep='first')]
+
+# filter out all movies that is also a music video
+base_df = base_df.drop(base_df[(base_df['keywords'].str.contains('music video') == True)].index)
+
+# filter out all movies that has short film as one of the keywords
+base_df = base_df.drop(base_df[(base_df['keywords'].str.contains('short film') == True)].index)
+
+# filter out all TV Movies with less than 200 votes 
+base_df = base_df.drop(base_df[(base_df['genres'].str.contains('TV Movie') == True) & (base_df['vote_count'] < 200)].index)
 
 # export the processed dataframe, base_df to a csv file 
 base_df.to_csv('./data/base_data.csv')
