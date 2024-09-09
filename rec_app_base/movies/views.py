@@ -40,7 +40,7 @@ def get_movies_by_genre(genre, rank_type, num_movies):
 
 # home view 
 def home(request):
-    return render(request, "movies/home.html", {"title": "Movies Home"})
+    return render(request, "movies/home.html", {"title": "Movies Recommender"})
 
 # movies_by_genre view
 def movies_by_genre_view(request):

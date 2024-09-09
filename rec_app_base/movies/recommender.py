@@ -39,8 +39,6 @@ base_df['production_countries'] = base_df['production_countries'].apply(lambda x
 base_df['production_companies'] = base_df['production_companies'].fillna('').apply(lambda x: [item.strip() for item in x.split(',')])
 base_df['production_companies'] = base_df['production_companies'].apply(lambda x: [i.lower().replace(" ", "") for i in x] if isinstance(x, list) else [])
 
-base_df.head(10)
-
 # df_by_va is base_df sorted by average audience ratings 
 df_by_va = base_df.sort_values('vote_average', ascending=[False])
 
@@ -144,7 +142,7 @@ base_df = base_df.reset_index()
 title_indices = pd.Series(base_df.index, index=base_df['title'])
 id_indices = pd.Series(base_df.index, index=base_df['id'])
 
-# find similar movies by description
+
 # find similar movies by description
 def sim_movies_by_desc(movie_id=None, movie_title=None):
     idx = 0
@@ -164,21 +162,26 @@ def sim_movies_by_desc(movie_id=None, movie_title=None):
 # overall_sim is the average of desc_sim and tags_sim, when 
 # one of the similarity is lower than 25 percentile, this means 
 # either the description or the tags is very different from the 
-# source movie, then we make the overall similarity to be zero
-def find_overall_sim(target_movie, desc_limit, tags_limit, desc_prop, tags_prop):
+# source movie, then the target movie is not a suitable similar movie 
+# and we make the overall similarity to be zero
+def find_overall_sim(target_movie, desc_limit, tags_limit, desc_upper, desc_prop, tags_prop):
     if target_movie['desc_sim'] < desc_limit or target_movie['tags_sim'] < tags_limit:
         return 0
     else:
-        return ((target_movie['desc_sim'] * desc_prop) + (target_movie['tags_sim'] * tags_prop))
+        multiply_factor = 1.0
+        if target_movie['desc_sim'] >= desc_upper:
+            multiply_factor = 1.25
+        return ((target_movie['desc_sim'] * multiply_factor * desc_prop) + (target_movie['tags_sim'] * tags_prop))
     
 
 # sort the list of movies by overall similarity scores 
 def rank_movies_overall(movies_list, desc_prop, tags_prop):
     desc_25q = movies_list['desc_sim'].quantile(0.25)
     tags_25q = movies_list['tags_sim'].quantile(0.25)
+    desc_70q = movies_list['desc_sim'].quantile(0.70)
     
     # overall_sim is the overall similarity of both desc_sim and tags_sim
-    movies_list['overall_sim'] = movies_list.apply(find_overall_sim, axis=1, args=(desc_25q, tags_25q, desc_prop, tags_prop))
+    movies_list['overall_sim'] = movies_list.apply(find_overall_sim, axis=1, args=(desc_25q, tags_25q, desc_70q, desc_prop, tags_prop))
     
     # sort by overall_sim 
     sorted_movies = movies_list.sort_values(by=['overall_sim'], ascending=False)
@@ -188,15 +191,22 @@ def rank_movies_overall(movies_list, desc_prop, tags_prop):
 # come up with custom similarity scores on a scale of 1 - 10 between the source movie and target movies 
 def calculate_score(target_movie, src_kw, src_gr, src_ct, src_va):
     # source movie is the movie we wish to find similar movies for
-    # we take the similarities in keyword (40%), genres(30%), studio (15%), and ratings (15%) into consideration
-    maj_weight_factor = 4.0
+    # we take the similarities in keyword (40%), genres(30%), studio (15%), and bayesian average ratings (15%) into consideration
+    dest_kw = target_movie['keywords']
+    dest_gr = target_movie['genres']
+    dest_ct = target_movie['production_countries']
+    dest_va = target_movie['bavg_rating']
+    max_weight_factor = 4.0
     med_weight_factor = 3.0
     min_weight_factor = 1.5
-    kw_sim = (len(np.intersect1d(src_kw, target_movie['keywords'])) / len(src_kw)) * maj_weight_factor
-    gr_sim = (len(np.intersect1d(src_gr, target_movie['genres'])) / len(src_gr)) * med_weight_factor
-    ct_sim = (len(np.intersect1d(src_ct, target_movie['production_countries'])) / len(src_ct)) * min_weight_factor
+    common_keys = len(np.intersect1d(src_kw, dest_kw))
+    common_genres = len(np.intersect1d(src_gr, dest_gr))
+    common_cts = len(np.intersect1d(src_ct, dest_ct))
+    kw_sim = (((common_keys / len(src_kw)) + (common_keys / len(dest_kw))) / 2) * max_weight_factor
+    gr_sim = (((common_genres / len(src_gr)) + (common_genres / len(dest_gr))) / 2) * med_weight_factor
+    ct_sim = (((common_cts / len(src_ct)) + (common_cts / len(dest_ct))) / 2) * min_weight_factor
     # formula for calculating rating similarity 1 - (abs(rating diff))/(source rating)
-    va_sim = (1 - abs(src_va - target_movie['bavg_rating'])/src_va) * min_weight_factor
+    va_sim = (1 - abs(src_va - dest_va)/src_va) * min_weight_factor
     tags_sim = gr_sim + kw_sim + ct_sim + va_sim
     return tags_sim
 
@@ -218,6 +228,7 @@ def find_matches(movie_id=None, movie_title=None, num_movies=0):
     # sort the movies list by overall similarity score of tags and description
     sorted_movies = rank_movies_overall(target_movies, 0.50, 0.50)
     result = sorted_movies.head(num_movies)
+    print(result)
     # save result to db
     result_ids = result['id'].values
     write_movies(result)
@@ -233,9 +244,13 @@ def find_sim_score(target_movie, src_kw, src_gr):
     # and take the average of this score with the desc_sim score 
     maj_weight_factor = 4.0
     med_weight_factor = 3.0
-    kw_sim = (len(np.intersect1d(src_kw, target_movie['keywords'])) / len(src_kw)) * maj_weight_factor
-    gr_sim = (len(np.intersect1d(src_gr, target_movie['genres'])) / len(src_gr)) * med_weight_factor
-    # give higher ranks to movies with a higher bayesian average 
+    dest_kw = target_movie['keywords']
+    dest_gr = target_movie['genres']
+    common_keywords = len(np.intersect1d(src_kw, target_movie['keywords']))
+    common_genres = len(np.intersect1d(src_gr, target_movie['genres']))
+    kw_sim = (((common_keywords / len(src_kw)) + (common_keywords / len(dest_kw))) / 2) * maj_weight_factor
+    gr_sim = (((common_genres / len(src_gr)) + (common_genres / len(dest_gr))) / 2) * med_weight_factor
+    # give higher ranks to movies with a higher vote_average
     va_sim = (target_movie['bavg_rating']/10) * med_weight_factor
     tags_sim = gr_sim + kw_sim + va_sim
     return tags_sim
