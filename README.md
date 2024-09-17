@@ -18,6 +18,6 @@ https://github.com/user-attachments/assets/2c7f0ba9-6949-4ef5-9b9c-7b576c1368a7
 
 This Fullstack web application is built with Python + Django + TMDB API. The backend fetches the beautiful movie posters via the TMDB API before displaying them to users. This product uses the TMDB API but is not endorsed or certified by TMDB.
 
-![TMDB_Logo](https://github.com/user-attachments/assets/6ddd4f5c-22e2-416c-a510-9fae17e2fcf2 | width=50)
+<img src="https://github.com/user-attachments/assets/6ddd4f5c-22e2-416c-a510-9fae17e2fcf2" width="50">
 
 
